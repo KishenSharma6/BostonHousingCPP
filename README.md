@@ -1,0 +1,1 @@
+In the following repo, I will be implementing a linear regression model from scratch in C++ on the Boston Housing dataset.
