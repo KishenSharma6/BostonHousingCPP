@@ -2,6 +2,7 @@
 #define etl_h
 
 #include <string>
+#include <vector>
 
 class ETL{
 
@@ -11,8 +12,8 @@ public:
     bool header;
     
     ETL(std::string dataset, std::string seperator, bool head):filename(dataset), delimiter(seperator), header(head){}; //constructor
-    int Test();
-    int CSVtoEigen();
+    
+    std::vector<std::vector<std::string>> ReadCSV(); 
 
 
 
