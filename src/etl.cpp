@@ -3,7 +3,8 @@
 #include <vector>
 
 #include "../headers/etl.h"
-#include </opt/homebrew/include/boost/algorithm/string.hpp>
+#include <boost/algorithm/string.hpp>
+#include <eigen3/Eigen/Dense>
 
 
 std::vector<std::vector<std::string>> ETL::ReadCSV()
@@ -22,4 +23,9 @@ std::vector<std::vector<std::string>> ETL::ReadCSV()
     file.close();
 
     return dataString;
+}
+
+Eigen::MatrixXd<std::vector<std::vector<std::string>>> ETL::CSVtoEigen(std::vector<std::vector<std::string>> dataString, int rows, int cols)
+{
+    pass;
 }
