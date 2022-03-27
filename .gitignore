@@ -1,1 +1,5 @@
+#Ignore build file
 build/*
+
+#Ignore vscode
+.vscode/*
