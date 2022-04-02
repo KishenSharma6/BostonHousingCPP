@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <eigen3/Eigen/Dense>
 
 class ETL{
 
