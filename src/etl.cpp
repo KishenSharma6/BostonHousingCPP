@@ -7,8 +7,6 @@
 #include <boost/algorithm/string.hpp>
 #include <eigen3/Eigen/Dense>
 
-
-
 std::vector<std::vector<std::string>> ETL::ReadCSV()
 {
     /*Reads csv data into memory as vector of vector of strings*/
@@ -28,36 +26,43 @@ std::vector<std::vector<std::string>> ETL::ReadCSV()
     return dataString;
 }
 
-void ETL::CorrectDataFormatting(std::vector<std::vector<std::string>> inputData, std::string outputFile)
-{
-    /*Corrects formatting issue of data/housing.csv and writes
-    data/houseingCleaned.txt*/
-    std::fstream file;
-    file.open(outputFile, std::fstream::out);
-
-    for (int i= 0; i < inputData.size(); i++)
-    {
-        file << inputData[i] << ",";
-        file<< std::endl;
-
-    }
-    file.close();
-    
-}
 
 Eigen::MatrixXd ETL::CSVtoEigen(std::vector<std::vector<std::string>> dataset, int rows, int cols)
 {
+    /*converts dataset to eigen*/
     if(header==true)
     {
         rows = rows -1;
     }
     
-    Eigen::MatrixXd mat(cols, rows);//init matrix to hold data in memory
+    Eigen::MatrixXd mat(rows, cols);//init matrix to hold data in memory
 
     for (int i= 0; i< rows; i++){
         for (int j= 0; j < cols; j ++){
-            mat(j, i) = atof(dataset[i][j].c_str());
+            mat(i, j) = atof(dataset[i][j].c_str());
         }
     }
-    return mat.transpose();
+    return mat;
 }
+
+std::tuple<Eigen::MatrixXd,Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd > ETL::TrainTestSplit(Eigen::MatrixXd dataset, float train_size){
+    int train_rows= dataset.rows() * train_size;
+    int test_rows= dataset.rows() - train_rows;
+
+    Eigen::MatrixXd x_train;
+    Eigen::MatrixXd y_train;
+    Eigen::MatrixXd x_test;
+    Eigen::MatrixXd y_test
+
+}
+
+auto ETL::Mean(Eigen::MatrixXd dataset) -> decltype(dataset.rowwise().mean()
+{
+    return dataset.colwise().mean();
+}
+
+auto ETL::Std(Eigen::MatriXxd dataset) -> decltype(((dataset.array().square().colwise().sum())/(data.rows()-1)).sqrt())
+{
+    return ((dataset.array().square().colwise().sum())/(data.rows()-1)).sqrt();
+}
+

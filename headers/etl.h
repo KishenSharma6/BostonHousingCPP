@@ -18,6 +18,10 @@ public:
     Eigen::MatrixXd CSVtoEigen(std::vector<std::vector<std::string>> dataString, int rows, int cols);
 
 
+    auto Mean(Eigen::MatrixXd dataset) -> decltype(dataset.rowwise().mean();
+    auto Std(Eigen::MatriXxd dataset) -> decltype(((dataset.array().square().colwise().sum())/(data.rows()-1)).sqrt());
+
+
 
 
 
