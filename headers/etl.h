@@ -16,6 +16,7 @@ public:
     
     std::vector<std::vector<std::string>> ReadCSV(); 
     Eigen::MatrixXd CSVtoEigen(std::vector<std::vector<std::string>> dataString, int rows, int cols);
+    std::tuple<Eigen::MatrixXd,Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd > TrainTestSplit(Eigen::MatrixXd dataset, float train_size);
 
 
     auto Mean(Eigen::MatrixXd dataset) -> decltype(dataset.rowwise().mean();
