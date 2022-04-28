@@ -58,26 +58,25 @@ std::tuple<Eigen::MatrixXd,Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd > E
     Eigen::MatrixXd x_test= test.leftCols(-1);
     Eigen::MatrixXd y_test= test.rightCols(1);
 
-    return std::tuple<x_train, y_train, x_test, y_test>;
+    return std::make_tuple(x_train, y_train, x_test, y_test);
 
 }
 
-auto ETL::Mean(Eigen::MatrixXd dataset) -> decltype(dataset.rowwise().mean()
+auto ETL::Mean(Eigen::MatrixXd data) -> decltype(data.colwise().mean()){
+    return data.colwise().mean();
+}
+
+auto ETL::Std(Eigen::MatrixXd dataset) -> decltype(((dataset.array().square().colwise().sum())/(dataset.rows()-1)).sqrt())
 {
-    return dataset.colwise().mean();
+    return ((dataset.array().square().colwise().sum())/(dataset.rows()-1)).sqrt();
 }
 
-auto ETL::Std(Eigen::MatriXxd dataset) -> decltype(((dataset.array().square().colwise().sum())/(data.rows()-1)).sqrt())
-{
-    return ((dataset.array().square().colwise().sum())/(data.rows()-1)).sqrt();
-}
-
-eigen::MatrixXd ETL::Normalize(eigen::MatrixXd dataset){
-    eigen::MatrixXd dataNorm;
+Eigen::MatrixXd ETL::Normalize(Eigen::MatrixXd dataset){
+    Eigen::MatrixXd dataNorm;
 
     auto mean= Mean(dataset.leftCols(-1));
 
-    dataNorm= dataset.leftcols(-1) - mean;
+    dataNorm= dataset.leftCols(-1) - mean;
     return dataNorm;
 
 }

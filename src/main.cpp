@@ -17,7 +17,12 @@ int main(int argc, char *argv[]){
 
     Eigen::MatrixXd dataMat= etl.CSVtoEigen(dataset, rows, cols);
 
-    etl.TrainTestSplit()
+    Eigen::MatrixXd X_train, y_train, X_test, y_test;
+
+    std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd> split_data = etl.TrainTestSplit(dataMat,.8);
+    std::tie(X_train, y_train, X_test, y_test) = split_data;
+
+    std::cout<< X_train.rows() << "," << X_train.cols() << std::endl;
     return EXIT_SUCCESS;
 
 }

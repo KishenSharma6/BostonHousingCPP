@@ -19,8 +19,10 @@ public:
     std::tuple<Eigen::MatrixXd,Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd > TrainTestSplit(Eigen::MatrixXd dataset, float train_size);
 
 
-    auto Mean(Eigen::MatrixXd dataset) -> decltype(dataset.rowwise().mean();
-    auto Std(Eigen::MatriXxd dataset) -> decltype(((dataset.array().square().colwise().sum())/(data.rows()-1)).sqrt());
+    auto Mean(Eigen::MatrixXd data) -> decltype(data.colwise().mean());
+    auto Std(Eigen::MatrixXd dataset) -> decltype(((dataset.array().square().colwise().sum())/(dataset.rows()-1)).sqrt());
+    
+    Eigen::MatrixXd Normalize(Eigen::MatrixXd dataset);
 
 
 
