@@ -22,7 +22,7 @@ public:
     auto Mean(Eigen::MatrixXd data) -> decltype(data.colwise().mean());
     auto Std(Eigen::MatrixXd dataset) -> decltype(((dataset.array().square().colwise().sum())/(dataset.rows()-1)).sqrt());
     
-    Eigen::MatrixXd Normalize(Eigen::MatrixXd dataset);
+    Eigen::MatrixXd Normalize(Eigen::MatrixXd dataset, bool normalizeTarget);
 
 
 

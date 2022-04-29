@@ -46,16 +46,16 @@ Eigen::MatrixXd ETL::CSVtoEigen(std::vector<std::vector<std::string>> dataset, i
 }
 
 std::tuple<Eigen::MatrixXd,Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd > ETL::TrainTestSplit(Eigen::MatrixXd dataset, float train_size){
-    int train_rows= dataset.rows() * train_size;
+    int train_rows= round(dataset.rows() * train_size);
     int test_rows= dataset.rows() - train_rows;
 
     Eigen::MatrixXd train= dataset.topRows(train_rows);
     Eigen::MatrixXd test= dataset.bottomRows(test_rows);
     
-    Eigen::MatrixXd x_train= train.leftCols(-1);
+    Eigen::MatrixXd x_train= train.leftCols(dataset.cols()-1);
     Eigen::MatrixXd y_train= train.rightCols(1);
 
-    Eigen::MatrixXd x_test= test.leftCols(-1);
+    Eigen::MatrixXd x_test= test.leftCols(dataset.cols()-1);
     Eigen::MatrixXd y_test= test.rightCols(1);
 
     return std::make_tuple(x_train, y_train, x_test, y_test);
@@ -71,12 +71,25 @@ auto ETL::Std(Eigen::MatrixXd dataset) -> decltype(((dataset.array().square().co
     return ((dataset.array().square().colwise().sum())/(dataset.rows()-1)).sqrt();
 }
 
-Eigen::MatrixXd ETL::Normalize(Eigen::MatrixXd dataset){
+Eigen::MatrixXd ETL::Normalize(Eigen::MatrixXd dataset, bool normalizeTarget){
     Eigen::MatrixXd dataNorm;
+    if(normalizeTarget==true) {
+        dataNorm = dataset;
+    } else {
+        dataNorm = dataset.leftCols(dataset.cols()-1);
+    }
 
-    auto mean= Mean(dataset.leftCols(-1));
+    auto mean = Mean(dataNorm);
+    Eigen::MatrixXd scaled_data = dataNorm.rowwise() - mean;
+    auto std = Std(scaled_data);
 
-    dataNorm= dataset.leftCols(-1) - mean;
-    return dataNorm;
+    Eigen::MatrixXd norm = scaled_data.array().rowwise()/std;
+
+    if(normalizeTarget==false) {
+        norm.conservativeResize(norm.rows(), norm.cols()+1);
+        norm.col(norm.cols()-1) = dataset.rightCols(1);
+    }
+
+    return norm;
 
 }
