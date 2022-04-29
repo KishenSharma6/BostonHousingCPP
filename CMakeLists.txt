@@ -11,7 +11,9 @@ link_directories("/opt/homebrew/lib")
 # Add main.cpp file of project root directory as source file
 set(SOURCE_FILES src/main.cpp
                  src/etl.cpp
-                 headers/etl.h)
+                 headers/etl.h
+                 src/linearRegression.cpp
+                 headers/linearRegression.h)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(regressor ${SOURCE_FILES})
