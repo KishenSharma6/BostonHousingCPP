@@ -7,17 +7,16 @@
 #include <boost/algorithm/string.hpp>
 #include <eigen3/Eigen/Dense>
 
-std::vector<std::vector<std::string>> ETL::ReadCSV()
-{
-    /*Reads csv data into memory as vector of vector of strings*/
-    std::fstream file(filename);
-    std::vector<std::vector<std::string>> dataString;
-    
-    std::string line= ""; // will hold string of text
+std::vector<std::vector<std::string>> ETL::readCSV(){
 
-    while (getline(file, line)){ //read from raw_data, store in line until raw_data ends
+    std::ifstream file(dataset);
+    std::vector<std::vector<std::string>> dataString;
+
+    std::string line = "";
+
+    while(getline(file,line)){
         std::vector<std::string> vec;
-        boost::algorithm::split(vec, line, boost::is_any_of(delimiter));
+        boost::algorithm::split(vec,line,boost::is_any_of(delimiter));
         dataString.push_back(vec);
     }
 
@@ -26,57 +25,56 @@ std::vector<std::vector<std::string>> ETL::ReadCSV()
     return dataString;
 }
 
+Eigen::MatrixXd ETL::CSVtoEigen(std::vector<std::vector<std::string>> dataset, int rows, int cols){
 
-Eigen::MatrixXd ETL::CSVtoEigen(std::vector<std::vector<std::string>> dataset, int rows, int cols)
-{
-    /*converts dataset to eigen*/
-    if(header==true)
-    {
-        rows = rows -1;
+    if(header==true){
+        rows = rows - 1;
     }
-    
-    Eigen::MatrixXd mat(rows, cols);//init matrix to hold data in memory
 
-    for (int i= 0; i< rows; i++){
-        for (int j= 0; j < cols; j ++){
-            mat(i, j) = atof(dataset[i][j].c_str());
+    Eigen::MatrixXd mat(cols,rows);
+    for(int i=0; i<rows; i++){
+        for(int j=0; j<cols; ++j){
+            mat(j,i) = atof(dataset[i][j].c_str());
         }
     }
-    return mat;
+
+    return mat.transpose();
 }
 
-std::tuple<Eigen::MatrixXd,Eigen::MatrixXd, Eigen::MatrixXd, Eigen::MatrixXd > ETL::TrainTestSplit(Eigen::MatrixXd dataset, float train_size){
-    int train_rows= round(dataset.rows() * train_size);
-    int test_rows= dataset.rows() - train_rows;
+std::tuple<Eigen::MatrixXd,Eigen::MatrixXd,Eigen::MatrixXd,Eigen::MatrixXd> ETL::TrainTestSplit(Eigen::MatrixXd data, float train_size){
 
-    Eigen::MatrixXd train= dataset.topRows(train_rows);
-    Eigen::MatrixXd test= dataset.bottomRows(test_rows);
-    
-    Eigen::MatrixXd x_train= train.leftCols(dataset.cols()-1);
-    Eigen::MatrixXd y_train= train.rightCols(1);
+    int rows = data.rows();
+    int train_rows = round(train_size*rows);
+    int test_rows = rows - train_rows;
 
-    Eigen::MatrixXd x_test= test.leftCols(dataset.cols()-1);
-    Eigen::MatrixXd y_test= test.rightCols(1);
+    Eigen::MatrixXd train = data.topRows(train_rows);
 
-    return std::make_tuple(x_train, y_train, x_test, y_test);
+    Eigen::MatrixXd X_train = train.leftCols(data.cols()-1);
+    Eigen::MatrixXd y_train = train.rightCols(1);
 
+    Eigen::MatrixXd test = data.bottomRows(test_rows);
+
+    Eigen::MatrixXd X_test = test.leftCols(data.cols()-1);
+    Eigen::MatrixXd y_test = test.rightCols(1);
+
+    return std::make_tuple(X_train, y_train, X_test, y_test);
 }
 
 auto ETL::Mean(Eigen::MatrixXd data) -> decltype(data.colwise().mean()){
     return data.colwise().mean();
 }
 
-auto ETL::Std(Eigen::MatrixXd dataset) -> decltype(((dataset.array().square().colwise().sum())/(dataset.rows()-1)).sqrt())
-{
-    return ((dataset.array().square().colwise().sum())/(dataset.rows()-1)).sqrt();
+auto ETL::Std(Eigen::MatrixXd data) -> decltype(((data.array().square().colwise().sum())/(data.rows()-1)).sqrt()){
+    return ((data.array().square().colwise().sum())/(data.rows()-1)).sqrt();
 }
 
-Eigen::MatrixXd ETL::Normalize(Eigen::MatrixXd dataset, bool normalizeTarget){
+Eigen::MatrixXd ETL::Normalize(Eigen::MatrixXd data, bool normalizeTarget){
+
     Eigen::MatrixXd dataNorm;
     if(normalizeTarget==true) {
-        dataNorm = dataset;
+        dataNorm = data;
     } else {
-        dataNorm = dataset.leftCols(dataset.cols()-1);
+        dataNorm = data.leftCols(data.cols()-1);
     }
 
     auto mean = Mean(dataNorm);
@@ -87,9 +85,21 @@ Eigen::MatrixXd ETL::Normalize(Eigen::MatrixXd dataset, bool normalizeTarget){
 
     if(normalizeTarget==false) {
         norm.conservativeResize(norm.rows(), norm.cols()+1);
-        norm.col(norm.cols()-1) = dataset.rightCols(1);
+        norm.col(norm.cols()-1) = data.rightCols(1);
     }
 
     return norm;
+}
 
+void ETL::Vectortofile(std::vector<float> vector, std::string filename){
+    std::ofstream output_file(filename);
+    std::ostream_iterator<float> output_iterator(output_file, "\n");
+    std::copy(vector.begin(), vector.end(), output_iterator);
+}
+
+void ETL::EigentoFile(Eigen::MatrixXd data, std::string filename){
+    std::ofstream output_file(filename);
+    if(output_file.is_open()){
+        output_file << data << "\n";
+    }
 }

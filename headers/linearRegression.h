@@ -1,13 +1,20 @@
-#ifndef etl_h
-#define etl_h
+#ifndef linearRegression_h
+#define linearRegression_h
+#include <eigen3/Eigen/Dense>
+#include <iostream>
+#include <cmath>
+#include <vector>
 
-class LR{
+class LinearRegression
+{
 
 public:
-    LR();
-    
+    LinearRegression()
+    {}
 
-
-}
+    float OLS_Cost(Eigen::MatrixXd X, Eigen::MatrixXd y, Eigen::MatrixXd theta);
+    std::tuple<Eigen::VectorXd,std::vector<float>> GradientDescent(Eigen::MatrixXd X, Eigen::MatrixXd y, Eigen::VectorXd theta, float alpha, int iters);
+    float RSquared(Eigen::MatrixXd y, Eigen::MatrixXd y_hat);
+};
 
 #endif
